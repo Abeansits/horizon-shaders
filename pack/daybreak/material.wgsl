@@ -16,6 +16,9 @@ fn is_foliage(material: u32) -> bool {
 }
 
 fn material(input: MaterialInput) -> Surface {
+    let albedo = display_color(input.albedo.rgb);
+    let vertex_tint = display_color(input.tint.rgb);
+    let colored = display_color(input.colored_light);
     // Marks the pixel as terrain Daybreak lit itself, for the composite's `relight_entities`
     // (translucent terrain stores nothing). Nothing reads it without shadows, so it isn't written.
     if relight_entities && shadows {
@@ -23,16 +26,16 @@ fn material(input: MaterialInput) -> Surface {
     }
     // Lava glows by itself.
     if input.fluid == 2u {
-        return Surface(vec4<f32>(input.albedo.rgb * input.tint.rgb * 1.05, input.albedo.a));
+        return Surface(vec4<f32>(linear_color(albedo * vertex_tint * 1.05), input.albedo.a));
     }
     if frame.dimension != 0 {
         // The Nether and the End: no sun, so their own glow and the light of blocks; vanilla's
         // face shade stays in the tint, since nothing else shades the faces here.
-        let light = underworld_light(input.position, input.light, input.colored_light);
-        var color = input.albedo.rgb * input.tint.rgb * light;
-        color = max(color, input.albedo.rgb * input.tint.rgb * input.emission);
-        color = mix(color, input.albedo.rgb * input.tint.rgb, frame.night_vision * 0.85);
-        return Surface(vec4<f32>(shoulder(color), input.albedo.a));
+        let light = underworld_light(input.position, input.light, colored);
+        var color = albedo * vertex_tint * light;
+        color = max(color, albedo * vertex_tint * input.emission);
+        color = mix(color, albedo * vertex_tint, frame.night_vision * 0.85);
+        return Surface(vec4<f32>(linear_color(shoulder(color)), input.albedo.a));
     }
     if input.fluid == 1u {
         return Surface(water_surface(input));
@@ -70,14 +73,14 @@ fn material(input: MaterialInput) -> Surface {
             * sun_shadow(input.position, offset, slant);
     }
 
-    let light = ambient_light(input.position, n, input.light, input.colored_light) + direct;
+    let light = ambient_light(input.position, n, input.light, colored) + direct;
     // Keep the tint's biome colour and ambient occlusion, without vanilla's face shade:
     // the light above already shades each face by where it turns.
-    let tint = input.tint.rgb / face_shade(n);
-    var color = input.albedo.rgb * tint * light;
+    let tint = vertex_tint / face_shade(n);
+    var color = albedo * tint * light;
     // Glowing blocks keep their own brightness whatever light is on them.
-    color = max(color, input.albedo.rgb * input.tint.rgb * input.emission);
+    color = max(color, albedo * vertex_tint * input.emission);
     // Night vision shows everything as if lit.
-    color = mix(color, input.albedo.rgb * input.tint.rgb, frame.night_vision * 0.85);
-    return Surface(vec4<f32>(shoulder(color), input.albedo.a));
+    color = mix(color, albedo * vertex_tint, frame.night_vision * 0.85);
+    return Surface(vec4<f32>(linear_color(shoulder(color)), input.albedo.a));
 }

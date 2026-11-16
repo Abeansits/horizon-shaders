@@ -2,7 +2,7 @@
 
 **Daybreak** is a shader pack for [Horizon](https://github.com/horizon-rust/horizon), the Rust
 reimplementation of Minecraft: Java Edition. It's written in WGSL against Horizon's own shader
-API (0.1). It runs inside Horizon's renderer and doesn't replace it, so Horizon's culling,
+API (0.2). It runs inside Horizon's renderer and doesn't replace it, so Horizon's culling,
 batching, LOD and meshing stay in charge, and the pack adds as little GPU time as possible.
 
 ![Sunset over the sea with Daybreak: sun glare, sun rays and reflections on the waves](docs/screenshots/sunset.jpg)
@@ -58,8 +58,7 @@ all four. Old `daybreak_low`, `daybreak_medium` and `daybreak_ultra` packs can b
 
 ## Try it
 
-1. Install the Horizon launcher and a Nightly from 2026-11-05 or newer (Daybreak 0.2 needs
-   Horizon's `[shadow]` options; 0.1.1 runs on Nightlies from 2026-11-03).
+1. Install a Horizon build with shader API 0.2 (Daybreak 0.3 requires it).
 2. Install Daybreak from the launcher's mod browser (Shader packs), or put
    `daybreak-<version>.hshader` from a [release](https://github.com/hildlabs/horizon-shaders/releases)
    into `shaderpacks/` beside your `options.txt`.
@@ -76,7 +75,7 @@ all four. Old `daybreak_low`, `daybreak_medium` and `daybreak_ultra` packs can b
 ## Develop
 
 ```sh
-cargo install --git https://github.com/horizon-rust/horizon --rev ee06d18c391102428fa5dded4f3d9d091ea361f0 horizon-shader-api --locked
+cargo install --git https://github.com/horizon-rust/horizon --rev 4626921895df51521be64d485ee763412de2917c horizon-shader-api --locked
 horizon-shader check pack/daybreak    # what the game, the launcher and the registry check
 horizon-shader pack pack/daybreak     # writes daybreak-<version>.hshader
 ```
@@ -90,7 +89,7 @@ horizon-shader pack pack/daybreak     # writes daybreak-<version>.hshader
 | `post/*.wgsl` | bloom prefilter → bloom blur → sun rays → composite |
 
 The API reference is Horizon's
-[`docs/api/shaders-reference.md`](https://github.com/horizon-rust/horizon/blob/main/docs/api/shaders-reference.md).
+[`docs/api/shaders-reference-0.2.md`](https://github.com/horizon-rust/horizon/blob/main/docs/api/shaders-reference-0.2.md).
 
 ## Credits
 
